@@ -3,9 +3,8 @@ import { UserButton } from '@clerk/nextjs'
 
 const Dashboard = () => {
   return (
-    <div className="flex items-center justify-center h-full">
-      <UserButton afterSignOutUrl="/" />
-      <ModeToggle />
+    <div>
+      <h1>Dashboard Page</h1>
     </div>
   )
 }
