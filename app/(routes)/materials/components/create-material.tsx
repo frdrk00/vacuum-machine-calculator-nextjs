@@ -11,6 +11,11 @@ import { formSchema } from './constants'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import FileUpload from './file-upload'
+
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
 import {
   Form,
   FormControl,
@@ -20,8 +25,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 
 const CreateMaterial = () => {
   const router = useRouter()
@@ -33,6 +36,7 @@ const CreateMaterial = () => {
     defaultValues: {
       title: '',
       description: '',
+      imageUrl: '',
     },
   })
 
@@ -115,6 +119,25 @@ const CreateMaterial = () => {
                 )}
               />
             </div>
+
+            <div className="flex items-center justify-center text-center">
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <FileUpload
+                        endpoint="serverImage"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <div className="w-full flex justify-center">
               <Button size="lg" disabled={loading}>
                 Create your companion
