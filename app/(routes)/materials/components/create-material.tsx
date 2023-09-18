@@ -41,7 +41,6 @@ const CreateMaterial = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values)
     try {
       setLoading(true)
       await axios.post('/api/materials', values)
@@ -58,22 +57,15 @@ const CreateMaterial = () => {
   console.log(form.formState.errors)
 
   return (
-    <div className="space-y-8 px-6 pt-2">
-      <div>
-        <h1 className="text-3xl font-bold">Create Material</h1>
-        <p className="text-gray-500">
-          Create a new material for your students to learn from
-        </p>
-      </div>
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="flex items-center justify-center text-center">
+            <div className="flex items-center justify-center text-center space-x-5 max-sm:flex-col max-sm:space-y-2">
               <FormField
                 name="title"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="max-sm:w-full">
                     <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
                       Ingredient Name
                     </FormLabel>
@@ -85,9 +77,8 @@ const CreateMaterial = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Enter your title here. It should be between 1 and 50
-                      characters
+                    <FormDescription className="text-gray-400 text-xs max-sm:w-full max-sm:flex max-sm:justify-start max-sm:ml-2">
+                      It should be between 1 and 50 characters
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -98,7 +89,7 @@ const CreateMaterial = () => {
                 name="description"
                 control={form.control}
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="max-sm:w-full">
                     <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
                       Description
                     </FormLabel>
@@ -110,9 +101,8 @@ const CreateMaterial = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Enter your description here. It should be between 1 and
-                      500 characters
+                    <FormDescription className="text-gray-400 text-xs max-sm:w-full max-sm:flex max-sm:justify-start max-sm:ml-2">
+                      It should be between 1 and 500 characters
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -120,18 +110,18 @@ const CreateMaterial = () => {
               />
             </div>
 
-            <div className="flex items-center justify-center text-center">
+            <div className="w-full flex justify-center">
               <FormField
                 control={form.control}
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <FileUpload
-                        endpoint="serverImage"
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
+                        <FileUpload
+                          endpoint="materialImage"
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                     </FormControl>
                   </FormItem>
                 )}
@@ -139,15 +129,14 @@ const CreateMaterial = () => {
             </div>
 
             <div className="w-full flex justify-center">
-              <Button size="lg" disabled={loading}>
-                Create your companion
+              <Button size="lg" disabled={loading} className="dark:bg-gray-400">
+                Create
                 <Wand2 className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </form>
         </Form>
       </div>
-    </div>
   )
 }
 

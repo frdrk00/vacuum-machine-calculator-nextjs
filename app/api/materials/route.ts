@@ -20,6 +20,10 @@ export async function POST(req: Request) {
       return new NextResponse('Description is required', { status: 400 })
     }
 
+    if (!imageUrl) {
+      return new NextResponse('Image is required', { status: 400 })
+    }
+
     const createMaterial = await db.material.create({
       data: {
         title,
@@ -32,6 +36,17 @@ export async function POST(req: Request) {
     return NextResponse.json(createMaterial)
   } catch (error) {
     console.log('[MATERIAL_POST:', error)
+    return new NextResponse('Internal Error_MATERIALS', { status: 500 })
+  }
+}
+
+export async function GET() {
+  try {
+    const materials = await db.material.findMany()
+
+    return NextResponse.json(materials)
+  } catch (error) {
+    console.log('[MATERIAL_GET:', error)
     return new NextResponse('Internal Error_MATERIALS', { status: 500 })
   }
 }
