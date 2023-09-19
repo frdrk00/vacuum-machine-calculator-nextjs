@@ -54,13 +54,13 @@ const CreateMaterial = () => {
     }
   }
 
-  console.log(form.formState.errors)
+  // console.log(form.formState.errors)
 
   return (
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="flex items-center justify-center text-center space-x-5 max-sm:flex-col max-sm:space-y-2">
+            <div className="flex items-center justify-center text-center md:space-x-5 max-sm:flex-col max-sm:space-y-2">
               <FormField
                 name="title"
                 control={form.control}
