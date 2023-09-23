@@ -1,12 +1,11 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import * as z from 'zod'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+
 import {
   Command,
   CommandEmpty,
@@ -14,98 +13,136 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command'
+
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+
 import { toast } from '@/components/ui/use-toast'
-import { useState } from 'react'
+
 import { Input } from '@/components/ui/input'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import Loading from '../loading'
 
-const materials = [
-  { label: 'Salt', value: 'sa' },
-  { label: 'Sugar', value: 'su' },
-  { label: 'Flour', value: 'fl' },
-  { label: 'Butter', value: 'bu' },
-  { label: 'Milk', value: 'mi' },
-  { label: 'Eggs', value: 'eg' },
-  { label: 'Oil', value: 'oi' },
-  { label: 'Garlic', value: 'ga' },
-  { label: 'Onion', value: 'on' },
-  { label: 'Tomato', value: 'to' },
-  { label: 'Basil', value: 'ba' },
-  { label: 'Lemon', value: 'le' },
-  { label: 'Cinnamon', value: 'ci' },
-  { label: 'Parsley', value: 'pa' },
-  { label: 'Thyme', value: 'th' },
-  { label: 'Paprika', value: 'pa' },
-  { label: 'Ginger', value: 'gi' },
-  { label: 'Honey', value: 'ho' },
-  { label: 'Vanilla', value: 'va' },
-  { label: 'Chili', value: 'ch' },
-] as const
+interface FormValues {
+  formFields: {
+    material: string
+    weight: string
+  }[]
+}
 
-const FormSchema = z.object({
-  formFields: z.array(
-    z.object({
-      material: z.string(),
-      weight: z.number().min(0, 'Weight must be greater than or equal to 0.'),
-    })
-  )
-})
-
-type MaterialFormValues = z.infer<typeof FormSchema>
+interface Material {
+  id: string
+  type: string
+  title: string
+}
 
 const SelectorPage = () => {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const [isLoading, setLoading] = useState(false)
+  const [materials, setMaterials] = useState<Material[]>([])
+
+  console.log(materials.map((material) => material.id))
+
+  useEffect(() => {
+    fetchMaterials()
+  }, [])
+
+  const fetchMaterials = async () => {
+    try {
+      setLoading(true)
+      const res = await axios.get('/api/materials')
+      setMaterials(res.data)
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const form = useForm<FormValues>({
+    defaultValues: {
+      formFields: [
+        {
+          material: '',
+          weight: '',
+        },
+      ],
+    },
   })
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: 'formFields',
     control: form.control,
   })
 
-  const onSubmit = (data: MaterialFormValues) => {
+  const onSubmit = (data: FormValues) => {
     const toastData = {
       title: 'You submitted the following values:',
-      description: data.formFields.map((item, index) => (
-          
-        <div key={index} className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            Material {index + 1}: {item.material}, Weight: {item.weight} grams
-          </code>
-        </div>
-      )),
+      description: data.formFields.map((item, index) => {
+        const selectedMaterial = materials.find(
+          (material) => material.id === item.material
+        )
+        const materialTitle = selectedMaterial
+          ? selectedMaterial.title
+          : 'Unknown Material'
+        const weight = item.weight ? `${item.weight} grams` : 'Unknown Weight'
+
+        return (
+          <div
+            key={index}
+            className="mt-2 w-[340px] rounded-md bg-slate-950 p-4"
+          >
+            <code className="text-white">
+              Material {index + 1}: {materialTitle}, Weight: {weight}
+            </code>
+          </div>
+        )
+      }),
     }
     toast(toastData)
+    console.log(data)
   }
 
-
+  const resetForm = () => {
+    form.reset({
+      formFields: [
+        {
+          material: '',
+          weight: '',
+        },
+      ],
+    })
+  }
 
   return (
-    <Form {...form} >
-      <form onSubmit={form.handleSubmit(onSubmit)}  className="w-full space-y-6">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        noValidate
+        className="space-y-6"
+      >
         <FormLabel>Materials</FormLabel>
-        <div className="w-full space-y-2">
+        <div className="flex flex-col w-full space-y-2">
           {fields.map((field, index) => (
-            <div key={index}>
+            <div className="flex w-full justify-between space-x-2" key={field.id}>
               <FormField
                 key={field.id}
                 control={form.control}
-                name={`formFields.${index}.material`}
+                name={`formFields.${index}.material` as const}
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="w-full flex flex-col">
                     <div className="flex space-x-2">
                       <Popover>
                         <PopoverTrigger asChild>
@@ -120,8 +157,8 @@ const SelectorPage = () => {
                             >
                               {field.value
                                 ? materials.find(
-                                    (material) => material.value === field.value
-                                  )?.label
+                                    (material) => material.id === field.value
+                                  )?.title
                                 : 'Select material'}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -134,24 +171,24 @@ const SelectorPage = () => {
                             <CommandGroup>
                               {materials.map((material) => (
                                 <CommandItem
-                                  value={material.label}
-                                  key={material.value}
+                                  value={material.id}
+                                  key={material.id}
                                   onSelect={() => {
                                     form.setValue(
-                                      `formFields.${index}.material`,
-                                      material.value
+                                      `formFields.${index}.material` as const,
+                                      material.id
                                     )
                                   }}
                                 >
                                   <Check
                                     className={cn(
                                       'mr-2 h-4 w-4',
-                                      material.value === field.value
+                                      material.id === field.value
                                         ? 'opacity-100'
                                         : 'opacity-0'
                                     )}
                                   />
-                                  {material.label}
+                                  {material.title}
                                 </CommandItem>
                               ))}
                             </CommandGroup>
@@ -161,14 +198,10 @@ const SelectorPage = () => {
                       <div className="w-full flex justify-self-start text-center items-center">
                         <FormField
                           control={form.control}
-                          name={`formFields.${index}.weight`}
+                          name={`formFields.${index}.weight` as const}
                           render={({ field }) => (
                             <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                placeholder="Enter weight"
-                              />
+                              <Input {...field} placeholder="Enter weight" />
                             </FormControl>
                           )}
                         />
@@ -178,26 +211,30 @@ const SelectorPage = () => {
                   </FormItem>
                 )}
               />
+              <div className="flex justify-end">
+                {index > 0 && (
+                  <button type="button" onClick={() => remove(index)}>
+                    <X className="ml-[-6px] h-6 w-6 text-red" />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
-        </div>
-        <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => append({ material: '', weight: 0 })}
-          >
-            Add next material
-          </Button>
-          <div className="flex space-x-2">
-            <Button variant="destructive" onClick={resetForm}>
+          <div className="flex justify-between pt-4">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => append({ material: '', weight: '' })}
+            >
+              Add Material
+            </Button>
+            <Button type="button" variant="destructive" onClick={resetForm}>
               Reset
             </Button>
           </div>
         </div>
-            <Button variant="default" type="submit">
-              Create recipe
-            </Button>
+
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   )

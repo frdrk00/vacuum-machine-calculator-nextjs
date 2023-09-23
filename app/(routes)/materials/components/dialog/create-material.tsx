@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Wand2 } from 'lucide-react'
 
-import { formSchema } from './constants'
+import { formSchema } from './schema'
 import { types } from '../table/data/data'
 
 import { useForm } from 'react-hook-form'
