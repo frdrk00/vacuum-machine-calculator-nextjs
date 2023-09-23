@@ -25,13 +25,21 @@ Before installing this application, make sure you have Node.js and npm installed
 1. Clone this repository:
 
 ```bash
+<<<<<<< HEAD
 git clone https://github.com/frdrk00/vacuum-machine-calculator-nextjs.git
+=======
+git clone https://github.com/your-github-repo/vacuum-massage-recipe-calculator.git
+>>>>>>> ee7fdfc1be7727a8e76b8f2b6f515280e031962a
 ```
 
 2. Install dependencies:
 
 ```bash
+<<<<<<< HEAD
 cd vacuum-machine-calculator-nextjs
+=======
+cd vacuum-massage-recipe-calculator
+>>>>>>> ee7fdfc1be7727a8e76b8f2b6f515280e031962a
 npm install
 ```
 
@@ -43,6 +51,17 @@ npm run dev
 
 The application should be available at `http://localhost:3000`.
 
+<<<<<<< HEAD
+=======
+## Contributing
+
+If you'd like to contribute to this project, please read the [contributing guide](CONTRIBUTING.md).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for more details.
+
+>>>>>>> ee7fdfc1be7727a8e76b8f2b6f515280e031962a
 ## Contact
 
 If you have any questions or feedback, feel free to contact us at [frederik.rbnsk@gmail.com](mailto:frederik.rbnsk@gamil.com).
