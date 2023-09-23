@@ -25,13 +25,17 @@ model Profile {
 }
 
 model Material {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  imageUrl    String?
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  title    String
+  type     String
+  quantity String
+  imageUrl String?
 
   profileId String  @db.ObjectId
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  categoryIds String[]   @db.ObjectId
+  categories  Category[] @relation(fields: [categoryIds], references: [id])
 
   members Member[]
 
@@ -39,6 +43,13 @@ model Material {
   updatedAt DateTime @updatedAt
 
   @@index([profileId])
+}
+
+model Category {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  materials   Material[] @relation(fields: [materialIds], references: [id])
+  materialIds String[]   @db.ObjectId
 }
 
 model Member {

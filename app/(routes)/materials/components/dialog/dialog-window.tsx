@@ -14,7 +14,7 @@ const DialogWindow = () => {
   return (
     <Dialog>
     <DialogTrigger asChild>
-      <Button variant="outline">Create</Button>
+      <Button>Create</Button>
     </DialogTrigger>
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>

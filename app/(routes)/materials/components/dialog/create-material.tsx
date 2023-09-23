@@ -7,19 +7,25 @@ import { useRouter } from 'next/navigation'
 import { Wand2 } from 'lucide-react'
 
 import { formSchema } from './constants'
+import { types } from '../table/data/data'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import FileUpload from './file-upload'
 
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,8 +41,8 @@ const CreateMaterial = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      description: '',
-      imageUrl: '',
+      type: '',
+      quantity: '',
     },
   })
 
@@ -54,63 +60,85 @@ const CreateMaterial = () => {
     }
   }
 
-  // console.log(form.formState.errors)
-
   return (
-      <div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="flex items-center justify-center text-center md:space-x-5 max-sm:flex-col max-sm:space-y-2">
-              <FormField
-                name="title"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="max-sm:w-full">
-                    <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
-                      Ingredient Name
-                    </FormLabel>
+    <div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="flex items-center justify-center flex-col space-y-2">
+            <FormField
+              name="type"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
+                    Ingredient Type
+                  </FormLabel>
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
-                      <Input
-                        disabled={loading}
-                        className="bg-transparent border focus-visible:ring-0 dark:text-white text-black focus-visible:ring-offset-0"
-                        placeholder="Enter name your ingredient ..."
-                        {...field}
-                      />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a verified email to display" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormDescription className="text-gray-400 text-xs max-sm:w-full max-sm:flex max-sm:justify-start max-sm:ml-2">
-                      It should be between 1 and 50 characters
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                    <SelectContent>
+                      {types.map((type) => (
+                        <SelectItem
+                          key={type.value}
+                          value={`${type.label.toLocaleLowerCase()}`}
+                        >
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                name="description"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="max-sm:w-full">
-                    <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
-                      Description
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={loading}
-                        className="bg-transparent border focus-visible:ring-0 dark:text-white text-black focus-visible:ring-offset-0"
-                        placeholder="Enter description your ingredient ..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription className="text-gray-400 text-xs max-sm:w-full max-sm:flex max-sm:justify-start max-sm:ml-2">
-                      It should be between 1 and 500 characters
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              name="title"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
+                    Material Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      className="bg-transparent border focus-visible:ring-0 dark:text-white text-black focus-visible:ring-offset-0"
+                      placeholder="Enter title your ingredient ..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="w-full flex justify-center">
+            <FormField
+              name="quantity"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel className="flex justify-start uppercase text-xs font-bold text-black dark:text-zinc-500 dark:text-secondary/70">
+                    Material Quantity
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      className="bg-transparent border focus-visible:ring-0 dark:text-white text-black focus-visible:ring-offset-0"
+                      placeholder="Enter quantity your ingredient ..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* <div className="w-full flex justify-center">
               <FormField
                 control={form.control}
                 name="imageUrl"
@@ -126,17 +154,17 @@ const CreateMaterial = () => {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
 
-            <div className="w-full flex justify-center">
-              <Button size="lg" disabled={loading} className="dark:bg-gray-400">
-                Create
-                <Wand2 className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
+          <div className="w-full flex justify-center">
+            <Button size="lg" disabled={loading} className="dark:bg-gray-400">
+              Create
+              <Wand2 className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   )
 }
 

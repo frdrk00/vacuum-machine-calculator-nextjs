@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const profile = await currentProfile()
     const body = await req.json()
-    const { title, description, imageUrl } = body
+    const { title, type, quantity, categoryIds } = body
 
     if (!profile) {
       return new NextResponse('Unauthorized', { status: 401 })
@@ -16,19 +16,19 @@ export async function POST(req: Request) {
       return new NextResponse('Title is required', { status: 400 })
     }
 
-    if (!description) {
-      return new NextResponse('Description is required', { status: 400 })
+    if (!type) {
+      return new NextResponse('Type is required', { status: 400 })
     }
 
-    if (!imageUrl) {
-      return new NextResponse('Image is required', { status: 400 })
+    if (!quantity) {
+      return new NextResponse('Quantity is required', { status: 400 })
     }
 
     const createMaterial = await db.material.create({
       data: {
         title,
-        description,
-        imageUrl,
+        type,
+        quantity,
         profileId: profile.id,
       },
     })

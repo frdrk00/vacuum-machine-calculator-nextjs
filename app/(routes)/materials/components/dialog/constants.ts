@@ -7,13 +7,13 @@ export const formSchema = z.object({
       message: 'Title is required',
     })
     .max(50),
-  description: z
+  type: z
     .string()
     .min(1, {
-      message: 'Description is required',
+      message: 'Type is required',
     })
     .max(500),
-  imageUrl: z.string().min(1, {
-    message: 'Server image is required',
+  quantity: z.string().min(1, {
+    message: 'Quantity is required',
   }),
 })

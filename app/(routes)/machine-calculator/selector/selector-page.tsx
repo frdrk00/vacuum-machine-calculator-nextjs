@@ -190,9 +190,9 @@ const SelectorPage = () => {
             Add next material
           </Button>
           <div className="flex space-x-2">
-{/*             <Button variant="destructive" onClick={resetForm}>
+            <Button variant="destructive" onClick={resetForm}>
               Reset
-            </Button> */}
+            </Button>
           </div>
         </div>
             <Button variant="default" type="submit">

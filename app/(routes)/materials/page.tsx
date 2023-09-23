@@ -2,28 +2,36 @@
 
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { z } from 'zod'
+
+import { columns } from './components/table/components/columns'
+import { materialSchema } from './components/table/data/schema'
 
 import Loading from './loading'
-
 import DialogWindow from './components/dialog/dialog-window'
-
-import { DataTable } from './components/table/components/data-table'
-import { columns } from './components/table/components/columns'
+import { DataTable } from '@/components/ui/data-table'
 
 const MaterialsPage = () => {
   const [isLoading, setLoading] = useState(false)
   const [materials, setMaterials] = useState([])
 
   useEffect(() => {
+    fetchMaterials()
+  }, [])
+
+  const fetchMaterials = async () => {
     try {
       setLoading(true)
-      axios.get('/api/materials').then((res) => setMaterials(res.data))
+      const res = await axios.get('/api/materials')
+      setMaterials(res.data)
     } catch (err) {
       console.log(err)
     } finally {
       setLoading(false)
     }
-  }, [])
+
+    return z.array(materialSchema).parse(materials)
+  }
 
   return (
     <>
@@ -39,7 +47,11 @@ const MaterialsPage = () => {
         </div>
       </div>
       <div className="md:w-full p-4">
-        {isLoading ? <Loading /> : <DataTable data={materials} columns={columns} />}
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <DataTable columns={columns} data={materials} />
+        )}
       </div>
     </>
   )

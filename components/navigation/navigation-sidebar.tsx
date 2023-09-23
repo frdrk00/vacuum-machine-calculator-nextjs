@@ -69,11 +69,11 @@ const NavigationSidebar = () => {
   const pathname = usePathname()
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-[#c8c9cc] dark:bg-[#111827] text-gray-800 dark:text-white">
+    <div className="space-y-4 py-4 flex flex-col h-full bg-gray-100 dark:bg-[#111827] text-gray-800 dark:text-white">
       <div className="px-3 py-2 flex-1">
         <Link href="/dashboard" className="flex items-center pl-3 mb-14">
           <div className="relative w-8 h-8 mr-4">
-            <Image fill alt="Logo" src="/logo.png" />
+            <Image fill alt="Logo" src="/logo.png"  />
           </div>
           <h1 className={cn('font-semibold', montserrat.className)}>
             Vacuum Massage Machine
@@ -85,10 +85,10 @@ const NavigationSidebar = () => {
               href={route.href}
               key={route.href}
               className={cn(
-                'text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition',
+                'text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-gray-200 hover:text-gray-900 dark:hover:text-white dark:hover:bg-white/10 rounded-lg transition',
                 pathname === route.href
-                  ? 'bg-white/10 text-white'
-                  : 'text-zinc-400'
+                  ? 'dark:bg-white/10 dark:text-white bg-white text-gray-900'
+                  : 'dark:text-zinc-400 text-gray-900'
               )}
             >
               <div className="flex items-center flex-1 ">

@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
-import { Row } from "@tanstack/react-table"
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { Row } from '@tanstack/react-table'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,19 +16,17 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu'
 
-import { labels } from "../data/data"
-import { taskSchema } from "../data/schema"
+import { types } from '../data/data'
+import { materialSchema } from '../data/schema'
 
-interface DataTableRowActionsProps<TData> {
+interface RowActionsProps<TData> {
   row: Row<TData>
 }
 
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
-  const task = taskSchema.parse(row.original)
+export function RowActions<TData>({ row }: RowActionsProps<TData>) {
+  const material = materialSchema.parse(row.original)
 
   return (
     <DropdownMenu>
@@ -47,10 +45,10 @@ export function DataTableRowActions<TData>({
         <DropdownMenuItem>Favorite</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
+          <DropdownMenuSubTrigger>Types</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.title}>
-              {labels.map((label) => (
+            <DropdownMenuRadioGroup value={material.title}>
+              {types.map((label) => (
                 <DropdownMenuRadioItem key={label.value} value={label.value}>
                   {label.label}
                 </DropdownMenuRadioItem>
