@@ -10,7 +10,7 @@ const MachineCalculatorPage = () => {
       </div>
       <div className="flex max-sm:justify-center max-sm:space-y-4 justify-between items-center max-sm:flex-col">
         <SelectorPage />
-        <CalculatorPage />
+        {/* <CalculatorPage /> */}
       </div>
     </div>
   )

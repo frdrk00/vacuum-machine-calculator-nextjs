@@ -34,7 +34,7 @@ import { toast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import Loading from '../loading'
+import CalculatorPage from '../calculator/calculator-page'
 
 interface FormValues {
   formFields: {
@@ -43,10 +43,11 @@ interface FormValues {
   }[]
 }
 
-interface Material {
+export interface Material {
   id: string
   type: string
   title: string
+  weight: number
 }
 
 const SelectorPage = () => {
