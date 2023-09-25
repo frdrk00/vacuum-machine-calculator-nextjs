@@ -1,19 +1,16 @@
 'use client'
 
-import { Check, ChevronsUpDown, X } from 'lucide-react'
-import { useFieldArray, useForm } from 'react-hook-form'
-
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-
+import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from '@/components/ui/command'
-
+} from '@/components/ui/command';
 import {
   Form,
   FormControl,
@@ -21,81 +18,89 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-
+} from '@/components/ui/form';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-
-import { toast } from '@/components/ui/use-toast'
-
-import { Input } from '@/components/ui/input'
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+} from '@/components/ui/popover';
+import { toast } from '@/components/ui/use-toast';
+import { Input } from '@/components/ui/input';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import MainInput from './main-input';
 
 interface FormValues {
-  formFields: {
-    material: string
-    weight: string
-  }[]
+  materials: {
+    material: string;
+    weight: string;
+  }[];
+  title: string;
 }
 
 export interface Material {
-  id: string
-  type: string
-  title: string
-  weight: number
+  id: string;
+  type: string;
+  title: string;
+  weight: number;
 }
 
 const SelectorPage = () => {
-  const [isLoading, setLoading] = useState(false)
-  const [materials, setMaterials] = useState<Material[]>([])
+  const [isLoading, setLoading] = useState(false);
+  const [recipeTitle, setRecipeTitle] = useState('');
+  const [materialTitle, setMaterialTitle] = useState('');
+  const [materialWeight, setMaterialWeight] = useState('');
+  const [materialId, setMaterialId] = useState('');
+
+  const [materials, setMaterials] = useState<Material[]>([]);
+
+  const router = useRouter();
 
   useEffect(() => {
-    fetchMaterials()
-  }, [])
+    fetchMaterials();
+  }, []);
 
   const fetchMaterials = async () => {
     try {
-      setLoading(true)
-      const res = await axios.get('/api/materials')
-      setMaterials(res.data)
+      setLoading(true);
+      const res = await axios.get('/api/materials');
+      setMaterials(res.data);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const form = useForm<FormValues>({
     defaultValues: {
-      formFields: [
+      materials: [
         {
           material: '',
           weight: '',
         },
       ],
+      title: '',
     },
-  })
+  });
 
   const { fields, append, remove } = useFieldArray({
-    name: 'formFields',
+    name: 'materials',
     control: form.control,
-  })
+  });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     const toastData = {
       title: 'You submitted the following values:',
-      description: data.formFields.map((item, index) => {
+      description: data.materials.map((item, index) => {
         const selectedMaterial = materials.find(
           (material) => material.id === item.material
-        )
+        );
         const materialTitle = selectedMaterial
           ? selectedMaterial.title
-          : 'Unknown Material'
-        const weight = item.weight ? `${item.weight} grams` : 'Unknown Weight'
+          : 'Unknown Material';
+        const weight = item.weight ? `${item.weight} grams` : 'Unknown Weight';
 
         return (
           <div
@@ -103,25 +108,52 @@ const SelectorPage = () => {
             className="mt-2 w-[340px] rounded-md bg-slate-950 p-4"
           >
             <code className="text-white">
-              Material {index + 1}: {materialTitle}, Weight: {weight}
+              Material {index + 1}: {materialTitle}, Weight: {weight}, _id: {item.material}
             </code>
           </div>
-        )
+        );
       }),
+    };
+
+    try {
+      setLoading(true);
+      const postData = {
+        title: recipeTitle, // Názov receptu
+        materials: data.materials.map(() => ({
+          title: materialTitle, // Názov materiálu
+          weight: materialWeight, // Váha materiálu
+          id: materialId, // ID materiálu
+        })),
+      };
+      await axios.post('/api/recipes', postData);
+
+      form.reset();
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      resetForm();
     }
-    toast(toastData)
-  }
+
+    toast(toastData);
+  };
 
   const resetForm = () => {
     form.reset({
-      formFields: [
+      materials: [
         {
           material: '',
           weight: '',
         },
       ],
-    })
-  }
+      title: '',
+    });
+    setRecipeTitle('');
+    setMaterialTitle('');
+    setMaterialWeight('');
+    setMaterialId('');
+  };
 
   return (
     <Form {...form}>
@@ -132,12 +164,22 @@ const SelectorPage = () => {
       >
         <FormLabel>Materials</FormLabel>
         <div className="flex flex-col w-full space-y-2">
+          <MainInput
+            onValueChange={(value) => {
+              setRecipeTitle(value);
+              form.setValue('title', value);
+            }}
+          />
+
           {fields.map((field, index) => (
-            <div className="flex w-full justify-between space-x-2" key={field.id}>
+            <div
+              className="flex w-full justify-between space-x-2"
+              key={field.id}
+            >
               <FormField
                 key={field.id}
                 control={form.control}
-                name={`formFields.${index}.material` as const}
+                name={`materials.${index}.material` as const}
                 render={({ field }) => (
                   <FormItem className="w-full flex flex-col">
                     <div className="flex space-x-2">
@@ -172,9 +214,12 @@ const SelectorPage = () => {
                                   key={material.id}
                                   onSelect={() => {
                                     form.setValue(
-                                      `formFields.${index}.material` as const,
+                                      `materials.${index}.material` as const,
                                       material.id
-                                    )
+                                    );
+                                    setMaterialTitle(material.title);
+                                    setMaterialWeight('');
+                                    setMaterialId(material.id);
                                   }}
                                 >
                                   <Check
@@ -192,13 +237,22 @@ const SelectorPage = () => {
                           </Command>
                         </PopoverContent>
                       </Popover>
+
                       <div className="w-full flex justify-self-start text-center items-center">
                         <FormField
                           control={form.control}
-                          name={`formFields.${index}.weight` as const}
+                          name={`materials.${index}.weight` as const}
                           render={({ field }) => (
                             <FormControl>
-                              <Input {...field} placeholder="Enter weight" />
+                              <Input
+                                {...field}
+                                placeholder="Enter weight"
+                                value={materialWeight}
+                                onChange={(e) => {
+                                  setMaterialWeight(e.target.value);
+                                  field.onChange(e);
+                                }}
+                              />
                             </FormControl>
                           )}
                         />
@@ -234,7 +288,7 @@ const SelectorPage = () => {
         <Button type="submit">Submit</Button>
       </form>
     </Form>
-  )
-}
+  );
+};
 
-export default SelectorPage
+export default SelectorPage;

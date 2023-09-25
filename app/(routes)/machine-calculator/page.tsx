@@ -1,5 +1,6 @@
 import SelectorPage from './selector/selector-page'
 import CalculatorPage from './calculator/calculator-page'
+import TestPage from './selector/test'
 
 const MachineCalculatorPage = () => {
   return (
@@ -9,7 +10,7 @@ const MachineCalculatorPage = () => {
         <p className="text-gray-500">Calculate the machine settings</p>
       </div>
       <div className="flex max-sm:justify-center max-sm:space-y-4 justify-between items-center max-sm:flex-col">
-        <SelectorPage />
+        {/* <TestPage /> */}
         {/* <CalculatorPage /> */}
       </div>
     </div>

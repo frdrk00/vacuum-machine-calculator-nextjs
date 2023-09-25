@@ -29,7 +29,6 @@ export async function POST(req: Request) {
         title,
         type,
         quantity,
-        profileId: profile.id,
       },
     })
 

@@ -17,39 +17,10 @@ model Profile {
   imageUrl String
   email    String @unique
 
-  materials Material[]
-  members   Member[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Material {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  title    String
-  type     String
-  quantity String
-  imageUrl String?
-
-  profileId String  @db.ObjectId
-  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-
-  categoryIds String[]   @db.ObjectId
-  categories  Category[] @relation(fields: [categoryIds], references: [id])
-
   members Member[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([profileId])
-}
-
-model Category {
-  id          String     @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  materials   Material[] @relation(fields: [materialIds], references: [id])
-  materialIds String[]   @db.ObjectId
 }
 
 model Member {
@@ -60,12 +31,47 @@ model Member {
   profileId String  @db.ObjectId
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
-  materialId String   @db.ObjectId
-  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([profileId])
-  @@index([materialId])
+}
+
+model Recipe {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  title    String  @unique
+  imageUrl String?
+
+  materials Material[]
+  recipeMaterials RecipeMaterial[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Material {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  title    String?
+  type     String?
+  quantity String?
+  weight   String?
+  material String?
+  imageUrl String?
+  materialId   String?
+  materialTitle String?
+  materialWeight String?
+  recipeMaterials RecipeMaterial[]
+
+  recipeId String? @db.ObjectId
+  recipe   Recipe? @relation(fields: [recipeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RecipeMaterial {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  material     Material @relation(fields: [id], references: [id])
+  recipe       Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId     String  @db.ObjectId
 }
