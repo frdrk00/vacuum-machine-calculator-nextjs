@@ -33,7 +33,7 @@ import MainInput from './main-input'
 
 export interface Material {
   id: string
-  title: string
+  title: string | undefined
   weight: string
 }
 
@@ -56,7 +56,6 @@ const SelectorPage = () => {
       setLoading(true)
       const res = await axios.get('/api/materials')
       setMaterials(res.data)
-      console.log(res.data)
     } catch (err) {
       console.log(err)
     } finally {
@@ -87,14 +86,22 @@ const SelectorPage = () => {
       setLoading(true)
       const recipeData = {
         title: data.title,
-        materials: data.materials.map((material) => ({
-          title: material.title,
-          materialId: material.id,
-          weight: material.weight,
-        })),
+        materials: data.materials.map((material, index) => {
+          const selectedMaterial = materials.find((m) => m.id === material.id)
+          const title = selectedMaterial
+            ? selectedMaterial.title
+            : 'Unknown Material'
+
+          return {
+            title,
+            materialId: material.id,
+            weight: material.weight,
+          }
+        }),
       }
 
-      /* await axios.post('/api/recipes', recipeData) */
+      console.log(recipeData)
+      await axios.post('/api/recipes', recipeData)
 
       const toastData = {
         title: 'You submitted the following values:',
