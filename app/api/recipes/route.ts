@@ -4,23 +4,18 @@ import { NextResponse } from 'next/server'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { materials, title } = body
     console.log(body)
 
     const createdRecipe = await db.recipe.create({
       data: {
-        title,
+        title: body.title, // Nahradit 'recipeTitle' podle vaší datové struktury
         materials: {
-          create: [
-            {
-              recipeMaterials: {
-                create: {
-                  material: materials,
-                  recipe: title,
-                },
-              },
-            },
-          ],
+          createMany: {
+            data: body.materials.map((material) => ({
+              title: material.materialId,
+              weight: material.weight,
+            })),
+          },
         },
       },
     })

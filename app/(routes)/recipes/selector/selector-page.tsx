@@ -1,16 +1,16 @@
 'use client'
 
-import { Check, ChevronsUpDown, X } from 'lucide-react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Check, ChevronsUpDown, X } from 'lucide-react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from '@/components/ui/command';
+} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -18,146 +18,131 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/components/ui/form'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { toast } from '@/components/ui/use-toast';
-import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import MainInput from './main-input';
-
-interface FormValues {
-  materials: {
-    material: string;
-    weight: string;
-  }[];
-  title: string;
-}
+} from '@/components/ui/popover'
+import { toast } from '@/components/ui/use-toast'
+import { Input } from '@/components/ui/input'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import MainInput from './main-input'
 
 export interface Material {
-  id: string;
-  type: string;
-  title: string;
-  weight: number;
+  id: string
+  title: string
+  weight: string
+}
+
+interface FormValues {
+  materials: Material[]
+  title: string
 }
 
 const SelectorPage = () => {
-  const [isLoading, setLoading] = useState(false);
-  const [recipeTitle, setRecipeTitle] = useState('');
-  const [materialTitle, setMaterialTitle] = useState('');
-  const [materialWeight, setMaterialWeight] = useState('');
-  const [materialId, setMaterialId] = useState('');
-
-  const [materials, setMaterials] = useState<Material[]>([]);
-
-  const router = useRouter();
+  const [isLoading, setLoading] = useState(false)
+  const [materials, setMaterials] = useState<Material[]>([])
+  const router = useRouter()
 
   useEffect(() => {
-    fetchMaterials();
-  }, []);
+    fetchMaterials()
+  }, [])
 
   const fetchMaterials = async () => {
     try {
-      setLoading(true);
-      const res = await axios.get('/api/materials');
-      setMaterials(res.data);
+      setLoading(true)
+      const res = await axios.get('/api/materials')
+      setMaterials(res.data)
+      console.log(res.data)
     } catch (err) {
-      console.log(err);
+      console.log(err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const form = useForm<FormValues>({
     defaultValues: {
       materials: [
         {
-          material: '',
+          id: '',
           weight: '',
+          title: '',
         },
       ],
       title: '',
     },
-  });
+  })
 
   const { fields, append, remove } = useFieldArray({
     name: 'materials',
     control: form.control,
-  });
+  })
 
   const onSubmit = async (data: FormValues) => {
-    const toastData = {
-      title: 'You submitted the following values:',
-      description: data.materials.map((item, index) => {
-        const selectedMaterial = materials.find(
-          (material) => material.id === item.material
-        );
-        const materialTitle = selectedMaterial
-          ? selectedMaterial.title
-          : 'Unknown Material';
-        const weight = item.weight ? `${item.weight} grams` : 'Unknown Weight';
-
-        return (
-          <div
-            key={index}
-            className="mt-2 w-[340px] rounded-md bg-slate-950 p-4"
-          >
-            <code className="text-white">
-              Material {index + 1}: {materialTitle}, Weight: {weight}, _id: {item.material}
-            </code>
-          </div>
-        );
-      }),
-    };
-
     try {
-      setLoading(true);
-      const postData = {
-        title: recipeTitle,
-        materials: data.materials.map((item) => ({
-          title: materialTitle,
-          weight: materialWeight,
-          id: materialId, // Include the ID of the selected material
+      setLoading(true)
+      const recipeData = {
+        title: data.title,
+        materials: data.materials.map((material) => ({
+          title: material.title,
+          materialId: material.id,
+          weight: material.weight,
         })),
-      };
-      const response = await axios.post('/api/recipes', postData);
+      }
 
-      form.reset();
-      router.refresh();
+      /* await axios.post('/api/recipes', recipeData) */
 
-      // Handle success response if needed
-      console.log('Recipe created:', response.data);
+      const toastData = {
+        title: 'You submitted the following values:',
+        description: data.materials.map((item, index) => {
+          const selectedMaterial = materials.find(
+            (material) => material.id === item.id
+          )
+          const materialTitle = selectedMaterial
+            ? selectedMaterial.title
+            : 'Unknown Material'
+          const weight = item.weight ? `${item.weight} grams` : 'Unknown Weight'
+
+          return (
+            <div
+              key={index}
+              className="mt-2 w-[340px] rounded-md bg-slate-950 p-4"
+            >
+              <code className="text-white">
+                Recipe: {data.title}, Material: {materialTitle}, Weight:{' '}
+                {weight}
+              </code>
+            </div>
+          )
+        }),
+      }
+
+      form.reset()
+      router.refresh()
+      toast(toastData)
     } catch (error) {
-      console.log(error);
-      // Handle error if needed
+      console.error(error)
     } finally {
-      setLoading(false);
-      resetForm();
+      setLoading(false)
     }
-
-    toast(toastData);
-  };
+  }
 
   const resetForm = () => {
     form.reset({
       materials: [
         {
-          material: '',
+          id: '',
           weight: '',
+          title: '',
         },
       ],
       title: '',
-    });
-    setRecipeTitle('');
-    setMaterialTitle('');
-    setMaterialWeight('');
-    setMaterialId('');
-  };
+    })
+  }
 
   return (
     <Form {...form}>
@@ -170,8 +155,7 @@ const SelectorPage = () => {
         <div className="flex flex-col w-full space-y-2">
           <MainInput
             onValueChange={(value) => {
-              setRecipeTitle(value);
-              form.setValue('title', value);
+              form.setValue('title', value)
             }}
           />
 
@@ -183,7 +167,7 @@ const SelectorPage = () => {
               <FormField
                 key={field.id}
                 control={form.control}
-                name={`materials.${index}.material` as const}
+                name={`materials.${index}.id` as const}
                 render={({ field }) => (
                   <FormItem className="w-full flex flex-col">
                     <div className="flex space-x-2">
@@ -214,16 +198,13 @@ const SelectorPage = () => {
                             <CommandGroup>
                               {materials.map((material) => (
                                 <CommandItem
-                                  value={material.id}
+                                  value={material.title}
                                   key={material.id}
                                   onSelect={() => {
                                     form.setValue(
-                                      `materials.${index}.material` as const,
+                                      `materials.${index}.id` as const,
                                       material.id
-                                    );
-                                    setMaterialTitle(material.title);
-                                    setMaterialWeight('');
-                                    setMaterialId(material.id);
+                                    )
                                   }}
                                 >
                                   <Check
@@ -251,10 +232,9 @@ const SelectorPage = () => {
                               <Input
                                 {...field}
                                 placeholder="Enter weight"
-                                value={materialWeight}
+                                value={field.value ? field.value : ''}
                                 onChange={(e) => {
-                                  setMaterialWeight(e.target.value);
-                                  field.onChange(e);
+                                  field.onChange(e)
                                 }}
                               />
                             </FormControl>
@@ -279,7 +259,7 @@ const SelectorPage = () => {
             <Button
               variant="outline"
               type="button"
-              onClick={() => append({ material: '', weight: '' })}
+              onClick={() => append({ title: '', weight: '', id: '' })}
             >
               Add Material
             </Button>
@@ -292,7 +272,7 @@ const SelectorPage = () => {
         <Button type="submit">Submit</Button>
       </form>
     </Form>
-  );
-};
+  )
+}
 
-export default SelectorPage;
+export default SelectorPage

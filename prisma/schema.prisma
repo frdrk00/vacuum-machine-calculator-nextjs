@@ -40,10 +40,8 @@ model Member {
 model Recipe {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
   title    String  @unique
-  imageUrl String?
 
   materials Material[]
-  recipeMaterials RecipeMaterial[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -51,16 +49,10 @@ model Recipe {
 
 model Material {
   id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  title    String?
+  title    String
   type     String?
   quantity String?
   weight   String?
-  material String?
-  imageUrl String?
-  materialId   String?
-  materialTitle String?
-  materialWeight String?
-  recipeMaterials RecipeMaterial[]
 
   recipeId String? @db.ObjectId
   recipe   Recipe? @relation(fields: [recipeId], references: [id])
@@ -69,9 +61,4 @@ model Material {
   updatedAt DateTime @updatedAt
 }
 
-model RecipeMaterial {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  material     Material @relation(fields: [id], references: [id])
-  recipe       Recipe   @relation(fields: [recipeId], references: [id])
-  recipeId     String  @db.ObjectId
-}
+
